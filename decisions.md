@@ -167,4 +167,42 @@ Text 1's "bad actor can register freely" design is meant to survive — rather
 than quietly mislabeling a mock as something it isn't.
 
 ---
+
+## 7. Real external vault pick: Aave V3 Sepolia `StaticATokenV3`, not Morpho Blue
+
+**Situation:** Text 1 frames Morpho Blue as "the market layer" to sit on.
+I checked Morpho's own official SDK (`@morpho-org/morpho-ts`, cloned from
+`morpho-org/sdks` on GitHub) — its `ChainId` enum lists only mainnets/L2
+mainnets (Ethereum, Base, Arbitrum, Optimism, Polygon, etc.). No Sepolia, no
+Base Sepolia, anywhere in the SDK or Morpho Blue's own repo. Morpho Blue is
+not deployed on any public testnet we can use.
+
+**Choices:**
+- Treat the registry as protocol-agnostic (which is how source.md already
+  specifies it — "any ERC-4626-compliant vault can register") and register a
+  different real, independently-deployed ERC-4626 vault on Sepolia instead
+  of Morpho specifically
+- Deploy our own mock contract that mimics a Morpho Blue market, labeled as
+  a stand-in
+- Use a mainnet fork to reach the real Morpho Blue (rejected already —
+  source.md §5.3 calls a mainnet fork "arguably a simulation")
+
+**What I chose:** Register Aave V3's real Sepolia deployment — specifically
+its `StaticATokenV3` wrapper (confirmed deployed at
+`0x8A88124522dbBF1E56352ba3DE1d9F78C143751e` for USDC, from BGD Labs' own
+`aave-address-book` repo), which is a genuine, independent, ERC-4626-
+compliant vault, alongside our own deliberately-insolvent vault for the loss
+test (decision 6).
+
+**Why:** This isn't actually a deviation from your brief — source.md's own
+"out of scope unless clearly achievable" list already names "full Morpho
+Blue integration across live markets." The registry's job is to accept any
+4626-compliant vault permissionlessly; Morpho was the source text's
+illustrative example of *why* that's valuable (because Morpho vaults happen
+to be 4626-compatible), not a hard dependency of the registry contract
+itself. Aave V3 being genuinely live on Sepolia, audited, and 4626-compliant
+via its official wrapper makes it a stronger real-world proof point than a
+mock would be, for zero extra custom code.
+
+---
 </content>
