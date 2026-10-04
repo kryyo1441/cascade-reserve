@@ -18,3 +18,6 @@ docs/
 .env
 .env.*
 !.env.example
+
+# Invariant failure caches (local repro artifacts, not meant to be shared)
+cache/invariant/
