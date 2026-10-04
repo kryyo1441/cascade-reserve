@@ -12,19 +12,20 @@ import {RepoFacility} from "../../src/RepoFacility.sol";
 /// into a permanent slash, and - if the repo from Phase3 was left unrepurchased past its tenor -
 /// settles it into a default: the lender keeps the note, no auction, no bot.
 ///
-/// Required env vars: PRIVATE_KEY, REGISTRY, CASCADE, ATTACKER_VAULT, REPO, REPO_ID.
-/// Run this only after the repo's tenor has actually elapsed if you want to exercise the
-/// default path; otherwise settleDefault reverts (by design - see RepoFacility.NotYetExpired).
+/// Required env vars: DEPLOYER_ADDRESS, REGISTRY, CASCADE, ATTACKER_VAULT, REPO, REPO_ID.
+/// Run with --account deployer, only after the repo's tenor has actually elapsed if you want
+/// to exercise the default path; otherwise settleDefault reverts (by design - see
+/// RepoFacility.NotYetExpired).
 contract Phase4LossAndDefault is Script {
     function run() external {
-        uint256 deployerKey = vm.envUint("PRIVATE_KEY");
+        address deployer = vm.envAddress("DEPLOYER_ADDRESS");
         VaultRegistry registry = VaultRegistry(vm.envAddress("REGISTRY"));
         Cascade cascade = Cascade(vm.envAddress("CASCADE"));
         DemoInsolventVault attackerVault = DemoInsolventVault(vm.envAddress("ATTACKER_VAULT"));
         RepoFacility repo = RepoFacility(vm.envAddress("REPO"));
         uint256 repoId = vm.envUint("REPO_ID");
 
-        vm.startBroadcast(deployerKey);
+        vm.startBroadcast(deployer);
 
         uint256 vaultBalance = attackerVault.totalAssets();
         attackerVault.simulateLoss(vaultBalance); // the deliberate, labeled failure scenario

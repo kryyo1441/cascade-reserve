@@ -15,7 +15,7 @@ import {DemoInsolventVault} from "../../src/DemoInsolventVault.sol";
 ///
 /// Usage (see README for the full walkthrough):
 ///   forge script script/deploy/Deploy.s.sol:DeploySepolia \
-///     --rpc-url $SEPOLIA_RPC_URL --broadcast --verify
+///     --rpc-url $SEPOLIA_RPC_URL --account deployer --broadcast --verify
 contract DeploySepolia is Script {
     // Aave V3 Sepolia addresses, confirmed from BGD Labs' own aave-address-book repo
     // (decisions.md #7) - independent of this project, genuinely deployed, genuinely real.
@@ -34,10 +34,12 @@ contract DeploySepolia is Script {
     uint256 constant HAIRCUT_BPS = 500; // 5%
 
     function run() external {
-        uint256 deployerKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(deployerKey);
+        // Deliberately no PRIVATE_KEY env var: the signer comes from --account <keystore>
+        // passed on the CLI, which prompts for the keystore password interactively. The
+        // deployer's address is public information, not a secret, so it's fine as an env var.
+        address deployer = vm.envAddress("DEPLOYER_ADDRESS");
 
-        vm.startBroadcast(deployerKey);
+        vm.startBroadcast(deployer);
 
         VaultRegistry registry =
             new VaultRegistry(IERC20(SEPOLIA_USDC), OBSERVATION_WINDOW, PROBATION_AMOUNT, deployer);

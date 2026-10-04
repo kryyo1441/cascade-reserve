@@ -11,17 +11,18 @@ import {VaultRegistry} from "../../src/VaultRegistry.sol";
 /// genuinely earns them full trust - this is live exercise of the observation window, not a
 /// skipped feature (source.md's own point about this).
 ///
-/// Required env vars: PRIVATE_KEY, REGISTRY, AAVE_USDC_STATIC_ATOKEN, ATTACKER_VAULT, USDC.
+/// Required env vars: DEPLOYER_ADDRESS, REGISTRY, AAVE_USDC_STATIC_ATOKEN, ATTACKER_VAULT.
+/// Run with --account deployer (keystore signer, no raw key in any file).
 /// The registry must already hold at least 2x PROBATION_AMOUNT of Sepolia USDC (send it there
 /// manually via `cast send` before running this - see README).
 contract Phase1RegisterVaults is Script {
     function run() external {
-        uint256 deployerKey = vm.envUint("PRIVATE_KEY");
+        address deployer = vm.envAddress("DEPLOYER_ADDRESS");
         VaultRegistry registry = VaultRegistry(vm.envAddress("REGISTRY"));
         address aaveVault = vm.envAddress("AAVE_USDC_STATIC_ATOKEN");
         address attackerVault = vm.envAddress("ATTACKER_VAULT");
 
-        vm.startBroadcast(deployerKey);
+        vm.startBroadcast(deployer);
         registry.register(aaveVault);
         registry.register(attackerVault);
         vm.stopBroadcast();

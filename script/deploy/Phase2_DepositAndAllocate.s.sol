@@ -12,9 +12,9 @@ import {ReserveNote} from "../../src/ReserveNote.sol";
 /// that one of them is about to be drained, exactly as source.md's "trust is earned, never
 /// granted" design intends).
 ///
-/// Required env vars: PRIVATE_KEY, USDC, CASCADE, L1, L2, AAVE_USDC_STATIC_ATOKEN, ATTACKER_VAULT.
-/// The deployer must hold Sepolia USDC and have approved L1/L2 for the deposit amounts (the
-/// script does the approvals itself).
+/// Required env vars: DEPLOYER_ADDRESS, USDC, CASCADE, L1, L2, AAVE_USDC_STATIC_ATOKEN,
+/// ATTACKER_VAULT. Run with --account deployer.
+/// The deployer must hold Sepolia USDC; the script handles the L1/L2 approvals itself.
 contract Phase2DepositAndAllocate is Script {
     uint256 constant SENIOR_DEPOSIT = 10e6; // 10 USDC
     uint256 constant JUNIOR_DEPOSIT = 5e6; // 5 USDC
@@ -22,7 +22,7 @@ contract Phase2DepositAndAllocate is Script {
     uint256 constant ALLOCATE_TO_ATTACKER = 4e6;
 
     function run() external {
-        uint256 deployerKey = vm.envUint("PRIVATE_KEY");
+        address deployer = vm.envAddress("DEPLOYER_ADDRESS");
         IERC20 usdc = IERC20(vm.envAddress("USDC"));
         Cascade cascade = Cascade(vm.envAddress("CASCADE"));
         ReserveNote l1 = ReserveNote(vm.envAddress("L1"));
@@ -30,13 +30,13 @@ contract Phase2DepositAndAllocate is Script {
         address aaveVault = vm.envAddress("AAVE_USDC_STATIC_ATOKEN");
         address attackerVault = vm.envAddress("ATTACKER_VAULT");
 
-        vm.startBroadcast(deployerKey);
+        vm.startBroadcast(deployer);
 
         usdc.approve(address(l1), SENIOR_DEPOSIT);
-        l1.deposit(SENIOR_DEPOSIT, msg.sender);
+        l1.deposit(SENIOR_DEPOSIT, deployer);
 
         usdc.approve(address(l2), JUNIOR_DEPOSIT);
-        l2.deposit(JUNIOR_DEPOSIT, msg.sender);
+        l2.deposit(JUNIOR_DEPOSIT, deployer);
 
         cascade.allocate(aaveVault, ALLOCATE_TO_AAVE);
         cascade.allocate(attackerVault, ALLOCATE_TO_ATTACKER);
