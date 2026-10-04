@@ -238,3 +238,29 @@ senior/junior tranche DeFi products (e.g. Maple Finance) compute waterfalls
 — live valuation, not a separate ledger of loss events.
 
 ---
+
+## 9. Repo matching: bilateral request/fill, VWAP Reserve Rate, borrower-callable roll()
+
+**Situation:** Text 2 describes what the repo facility must do (post an L1 note, get cash now,
+fixed tenor, repurchase or counterparty keeps the note, clearing price becomes the Reserve Rate)
+but never specifies the actual matching mechanism between borrowers and cash lenders - another
+term invented from scratch, not merely filled in.
+
+**Choices:**
+- Bilateral request/fill: borrower posts collateral and names cash-now + repurchase-price
+  (together implying a rate); any lender can fill it; Reserve Rate = volume-weighted average of
+  filled rates in the last tenor-length window - genuinely transaction-based, same shape as SOFR
+- Pooled lending at a utilization-curve rate (Aave/Compound-style) - far less code, but this is
+  exactly the "lending-market floating rate... not strictly risk-free" proxy Text 2 itself calls
+  inadequate; it would not produce a real transaction-based benchmark
+
+**What I chose:** Bilateral request/fill with VWAP — your call, matches the recommendation.
+
+**Why:** It's the only one of the two that actually satisfies the brief's own stated goal (a
+*transaction-based* rate, not a formula). "Auto-rolling" (Text 2's own phrase) is implemented as
+a borrower-callable `roll()` that atomically repurchases the current cycle and reopens a fresh
+one without the collateral ever leaving the facility — true zero-transaction automation would
+need an off-chain keeper bot, which is out of scope for this slice; `roll()` is the honest
+on-chain stand-in, documented as such in the README.
+
+---
