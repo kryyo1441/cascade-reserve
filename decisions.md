@@ -205,4 +205,36 @@ via its official wrapper makes it a stronger real-world proof point than a
 mock would be, for zero extra custom code.
 
 ---
-</content>
+
+## 8. Waterfall computation: lazy valuation, not explicit loss-event booking
+
+**Situation:** When an underlying vault the Cascade has deposited into takes
+a loss, L2 (junior) is supposed to absorb it before L1 (senior) does. There
+are two ways to implement that.
+
+**Choices:**
+- Lazy valuation: pool value = live sum of `convertToAssets()` across every
+  vault the Cascade holds shares in; L1's claim = `min(pool, L1 principal +
+  accrued yield)`; L2 gets the residual, which can shrink to zero. No
+  separate "loss" state is ever written — a loss just shows up as L2's
+  redeemable value per share dropping on the next read.
+- Explicit loss-event booking: a function detects a loss and writes down a
+  separate recorded balance for L2 first, then L1, producing an explicit
+  on-chain loss-event log distinct from ordinary price movement.
+
+**What I chose:** Lazy valuation — asked for my recommendation given the
+hiring context, and this is it.
+
+**Why:** Fewer lines of custom state means fewer places a reviewer (or an
+exploit) can find a mismatch between recorded state and real value — the
+senior claim literally cannot exceed the pool because it's defined as
+`min(pool, ...)`, so the brief's required invariant ("total claims never
+exceed assets") holds by construction instead of needing a separate proof
+that the bookkeeping stays in sync. Explicit booking needs that bookkeeping
+to always track the live pool correctly, which is exactly the kind of
+subtle drift bug that's hard to catch without an audit and hard to defend
+under questioning with no prior Solidity background. This is also how real
+senior/junior tranche DeFi products (e.g. Maple Finance) compute waterfalls
+— live valuation, not a separate ledger of loss events.
+
+---
