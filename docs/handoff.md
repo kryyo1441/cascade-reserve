@@ -38,6 +38,27 @@ simulation.
   contract, one test file, one doc, etc.), use `feature/*` branches merged
   into `master` with `--no-ff` at natural checkpoints (one component =
   one branch = one merge commit). Never amend, never force-push.
+- **Branch name is `master`, not `main`** (that's just what `git init`
+  picked by default here - no reason to rename it, but don't assume
+  `main` exists).
+- **Remote**: `origin` → `https://github.com/kryyo1441/cascade-reserve.git`.
+  As of the last commit in this session (`9bff03e`, "docs: add session
+  handoff notes"), local `master` and `origin/master` are in sync (0 commits
+  ahead or behind either way) - confirmed via `git fetch origin && git log
+  origin/master..master` and the reverse, both empty. This repo was pushed
+  at some point during the session, though not by a command run through
+  this assistant - likely the user pushed directly from their own
+  terminal. **Always `git fetch origin` and compare before assuming local
+  state matches what's on GitHub**, since the user can and does push
+  independently.
+- **Merge history so far** (each is a `feature/*` branch merged with
+  `--no-ff` into `master`, then the branch deleted):
+  - `feature/vault-registry` → merge commit `4a72d6f`
+  - `feature/cascade-notes` → merge commit `1f4a1df`
+  - `feature/repo-facility` → merge commit `5a07763`
+  - Everything since (docs, the keystore-signing fix, broadcast artifacts)
+    was committed straight to `master` - no branch needed for non-code
+    changes made directly in response to in-session feedback.
 - Ponytail mode (lazy-but-correct, no unrequested abstractions) and ultra
   effort apply throughout - keep solutions as small as they can be while
   still being real and well-tested.
