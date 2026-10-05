@@ -2,14 +2,13 @@
 
 Read this first if you're a fresh Claude Code session picking this project
 up. It has zero memory of the conversation that produced this repo - this
-file is written to stand in for that memory. Read `source.md` (the brief),
-`decisions.md` (every design decision and why), `docs/progress.md` (what
-exists), and `docs/PLAN.md` (what's next) alongside this file.
+file is written to stand in for that memory. Read `decisions.md` (every
+design decision and why), `docs/progress.md` (what exists), and
+`docs/PLAN.md` (what's next) alongside this file.
 
 ## What this project is
 
-**Cascade Reserve**: a DeFi hiring-task build for a web3/cybersecurity
-internship. Full brief in `source.md`. Short version: a tiered credit
+**Cascade Reserve**: a DeFi protocol build. Short version: a tiered credit
 protocol (L1/L2 Reserve Notes, ERC-4626, real loss waterfall) with a repo
 market on top (L1 notes repoable for cash, a real transaction-based
 "Reserve Rate" benchmark). Built with Foundry + OpenZeppelin v5.7, deployed
@@ -116,9 +115,9 @@ EURS** (`0x72B49a461900e11632C95dfa563e7173438D4e3E`, underlying token
 `0x6d906e526a4e2Ca02097BA9d0caA3c382F52278E`). Confirmed via `cast call`:
 `decimals() == 2` (not 6 - this matters for every hardcoded amount in the
 deploy scripts), `maxDeposit() == uint256.max` (open capacity). EURS is a
-genuine Euro-pegged stablecoin, so it keeps source.md Text 2's "receive
-stablecoin cash" framing intact - this is a real substitution, not a
-downgrade to a mock.
+genuine Euro-pegged stablecoin, so it keeps the brief's "receive stablecoin
+cash" framing intact - this is a real substitution, not a downgrade to a
+mock.
 
 This requires **no contract code changes** - `VaultRegistry`, `Cascade`,
 `ReserveNote`, and `RepoFacility` are all decimals-agnostic already. Only

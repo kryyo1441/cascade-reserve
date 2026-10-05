@@ -1,8 +1,7 @@
 # Cascade Reserve
 
 A tiered credit protocol with a repo market on top, combining two design
-briefs (`source.md` has the full source texts and the assessment this
-README summarizes):
+briefs:
 
 - **The Cascade**: capital pools across registered ERC-4626 vaults. Any
   vault can register permissionlessly but starts at zero allocation
@@ -49,7 +48,7 @@ Next.js viewer over the live deployment.
 - The Reserve Rate is a volume-weighted average of real fills in a
   trailing tenor-length window — genuinely transaction-based, but with no
   manipulation resistance (no volume floor, no multi-participant
-  requirement). A thin market is easy to move; source.md flags this
+  requirement). A thin market is easy to move; the brief flags this
   itself and explicitly scopes a production-grade resistant rate as out
   of scope.
 - `roll()` (repo auto-rolling) is a borrower-callable function that
@@ -84,8 +83,7 @@ discussion. Working definitions used throughout this codebase:
 - **"Real environment" / "no simulation"**: read as a public testnet
   (Sepolia) with verified contracts and real transactions, not a mainnet
   deployment (reckless for an unaudited protocol) and not a mainnet fork
-  (arguably still a simulation). See `source.md` §5.3 for the full
-  reasoning.
+  (arguably still a simulation).
 
 ## Known risks and limitations
 
@@ -109,8 +107,8 @@ discussion. Working definitions used throughout this codebase:
   into a separate, retryable step.
 - **Morpho Blue dependency risk**: N/A to this deployment — Morpho Blue is
   not integrated (see decision 7), so its dependency risk never applies
-  here. Noted because source.md calls it out as "the one honest new risk"
-  of the design it describes.
+  here. Noted because the original brief calls it out as "the one honest
+  new risk" of the design it describes.
 
 ## Design decisions
 
@@ -130,7 +128,6 @@ test/fuzz/              VaultRegistry scoring under randomized inputs
 test/invariant/        Cascade waterfall safety, RepoFacility lifecycle
 script/deploy/          Deploy.s.sol + Phase1-4 (the live Sepolia demo)
 dashboard/              read-only Next.js viewer (its own README)
-source.md               the brief, verbatim, plus the assessment
 decisions.md            every design decision and why
 docs/                   plan, progress, and session handoff notes
 ```

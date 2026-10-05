@@ -1,7 +1,7 @@
 # Plan
 
-This is the forward-looking plan, derived from `source.md` section 6
-("Suggested scope") and the decisions already logged in `decisions.md`.
+This is the forward-looking plan, derived from the brief's suggested scope
+and the decisions already logged in `decisions.md`.
 **This file is expected to change** if we hit another real-world wall like
 the one described in `handoff.md` — update it in place rather than treating
 it as fixed, and note *why* a step changed when it does.
@@ -74,7 +74,7 @@ it as fixed, and note *why* a step changed when it does.
    tests, deployment, and the dashboard. Points to `decisions.md` for the
    full reasoning behind each choice rather than duplicating it.
 
-## Out of scope (per source.md, revisit only if everything above is solid)
+## Out of scope (per the brief, revisit only if everything above is solid)
 - Full Morpho Blue integration (impossible on any public testnet anyway -
   confirmed, not just unscoped).
 - Full ERC-7540 async flows - only if core is complete and time remains.
