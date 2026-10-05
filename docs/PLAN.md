@@ -55,11 +55,17 @@ it as fixed, and note *why* a step changed when it does.
    - [ ] Double-check all 6 contracts verify cleanly on the new addresses
      (verification ran during `Deploy.s.sol --verify`; spot-check on
      Etherscan before moving on).
-8. **Dashboard** — not started. Next.js + shadcn/ui + lucide-react (user's
-   explicit choice), using the `ui-ux-pro-max` skill for the design pass.
-   Reads live testnet state: note supply per tier (the multiplier
-   reading), registered vault weights, current Reserve Rate. Depends on
-   phase 7 being complete (need final, stable contract addresses).
+8. ~~Dashboard~~ — done (`dashboard/`, see its own README). Next.js +
+   shadcn/ui, read-only. All chain reads happen server-side in one `viem`
+   multicall (`app/api/state/route.ts`) so the RPC URL never reaches the
+   client; the page polls it every 15s. Shows note supply and value per
+   note for each tier (the multiplier reading), registered vault weights
+   and trust status, the current Reserve Rate, and the latest repo.
+   Verified against the live post-Phase-4 deployment: correctly showed
+   the slashed attacker vault, the junior tranche's loss, and the closed
+   repo. Didn't end up invoking the `ui-ux-pro-max` skill - shadcn's
+   defaults were clean enough for a read-only internal viewer; revisit if
+   the dashboard becomes user-facing.
 9. **README.md** — not started. Must state plainly: what's real vs
    simplified, the assumptions for undefined terms (discovery engine,
    floor, depth - already defined in `decisions.md`, just needs
