@@ -77,23 +77,33 @@ few seconds. `forge test --profile deep` reruns the invariant suites at
   contract, called directly - see `handoff.md`). Lender wallet: funded with
   0.02 Sepolia ETH and 100 Sepolia USDC (both sent from deployer).
 
-### Sepolia deployment — superseded, redeploy scripts ready
-All 6 contracts were deployed to Sepolia and verified on Etherscan, wired
-to Aave's Sepolia USDC (`0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8`). That
-deployment is **abandoned**: Aave's Sepolia USDC market has hit its supply
-cap (`maxDeposit() == 0`), which blocks even registering the real external
+### Sepolia deployment — USDC attempt abandoned, EURS deployment live and complete
+First attempt: all 6 contracts deployed and verified on Etherscan, wired
+to Aave's Sepolia USDC (`0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8`).
+**Abandoned**: Aave's Sepolia USDC market had hit its supply cap
+(`maxDeposit() == 0`), which blocked even registering the real external
 vault, because `VaultRegistry.register()` bundles a probation deposit into
-the registration call itself. Full story and evidence are in `handoff.md`.
+the registration call itself. Full story in `handoff.md`.
 
-The fix — switching the protocol's asset to Aave Sepolia's EURS market —
-is implemented in `script/deploy/*.sol` (constants + decimals-correct
-amounts, `forge build` clean, no contract code changes needed since
-`VaultRegistry`/`Cascade`/`ReserveNote`/`RepoFacility` are decimals-
-agnostic). See decisions.md #10. Not yet redeployed on-chain.
+Fix: switched the protocol's asset to Aave Sepolia's EURS market
+(decisions.md #10) and redeployed. **All 6 contracts verified on Etherscan,
+EURS-wired, and the full phased demo has been run end-to-end on Sepolia:**
+- Phase 1: registered Aave's real EURS vault + the attacker vault (zero
+  weight each).
+- Phase 2: deposited 10 EURS into L1, 5 EURS into L2; allocated 8 EURS to
+  the Aave vault, 4 EURS to the attacker vault.
+- Phase 3a/3b: opened repo #0 (1.89 EURS cash, 1.90 EURS repurchase
+  price), lender filled it. Reserve Rate recorded on-chain.
+- Phase 4: drained the attacker vault, checkpointed it (permissionless
+  loss detection, permanently slashed to zero weight), settled repo #0 as
+  **defaulted** (lender keeps the L1 note). Confirmed the waterfall held:
+  senior claim stayed at 1000 through the loss, junior claim absorbed it
+  (379 → 19).
+
+The required on-chain trail (real deployment, real external vault
+integration, real loss scenario, real two-party repo market) is complete.
 
 ## Not done yet
-- Fund deployer/lender with Sepolia EURS and re-run `Deploy.s.sol` against
-  the new constants (new addresses - old USDC-wired ones are abandoned).
-- Re-run Phase 1-4 against the new deployment.
+- Spot-check all 6 contracts on Etherscan to confirm verification held.
 - Dashboard (Next.js + shadcn/ui + lucide-react, per earlier user request).
 - `README.md` (still the default `forge init` placeholder).
