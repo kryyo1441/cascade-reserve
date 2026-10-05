@@ -82,6 +82,26 @@ export async function GET() {
       ? await publicClient.readContract({ address: addresses.repo, abi: repoFacilityAbi, functionName: "repos", args: [repoId] })
       : null;
 
+  // Fill history for the Reserve Rate chart - small by construction (demo-scale repo volume),
+  // so no pagination yet; add it if fillsCount grows large enough to matter.
+  const fillsCountBig = fillsCount as unknown as bigint;
+  const fillReads =
+    fillsCountBig > 0n
+      ? await publicClient.multicall({
+          contracts: Array.from({ length: Number(fillsCountBig) }, (_, i) => ({
+            address: addresses.repo,
+            abi: repoFacilityAbi,
+            functionName: "fills" as const,
+            args: [BigInt(i)],
+          })),
+          allowFailure: false,
+        })
+      : [];
+  const fillHistory = fillReads.map((f) => {
+    const [timestamp, cashAmount, rateWad] = f as unknown as readonly [bigint, bigint, bigint];
+    return { timestamp: timestamp.toString(), cashAmount: cashAmount.toString(), rateWad: rateWad.toString() };
+  });
+
   return Response.json({
     fetchedAt: new Date().toISOString(),
     cascade: {
@@ -100,6 +120,7 @@ export async function GET() {
       repoCount: (nextRepoId as bigint).toString(),
       fillsCount: (fillsCount as bigint).toString(),
       haircutBps: (haircutBps as bigint).toString(),
+      fillHistory,
       lastRepo: lastRepo
         ? (() => {
             const [borrower, lender, noteAmount, cashAmount, repurchasePrice, openedAt, filledAt, filled, closed] = lastRepo as readonly [
