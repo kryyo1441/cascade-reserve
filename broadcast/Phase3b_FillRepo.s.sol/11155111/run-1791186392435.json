@@ -1,0 +1,57 @@
+{
+  "transactions": [
+    {
+      "hash": null,
+      "transactionType": "CALL",
+      "contractName": null,
+      "contractAddress": "0x6d906e526a4e2ca02097ba9d0caa3c382f52278e",
+      "function": "approve(address,uint256)",
+      "functionAbi": "function approve(address spender, uint256 amount) returns (bool)",
+      "arguments": [
+        "0x26495D6c9ab1E1d235De4b4268C03ad832518A9e",
+        "189"
+      ],
+      "transaction": {
+        "from": "0xf90242b7f993fb04bc08f63220ac918778850365",
+        "to": "0x6d906e526a4e2ca02097ba9d0caa3c382f52278e",
+        "gas": "0xf938",
+        "value": "0x0",
+        "input": "0x095ea7b300000000000000000000000026495d6c9ab1e1d235de4b4268c03ad832518a9e00000000000000000000000000000000000000000000000000000000000000bd",
+        "nonce": "0x0",
+        "chainId": "0xaa36a7"
+      },
+      "additionalContracts": [],
+      "isFixedGasLimit": false
+    },
+    {
+      "hash": null,
+      "transactionType": "CALL",
+      "contractName": null,
+      "contractAddress": "0x26495d6c9ab1e1d235de4b4268c03ad832518a9e",
+      "function": "fillRepo(uint256)",
+      "functionAbi": "function fillRepo(uint256 repoId)",
+      "arguments": [
+        "0"
+      ],
+      "transaction": {
+        "from": "0xf90242b7f993fb04bc08f63220ac918778850365",
+        "to": "0x26495d6c9ab1e1d235de4b4268c03ad832518a9e",
+        "gas": "0x39310",
+        "value": "0x0",
+        "input": "0xef43a5f30000000000000000000000000000000000000000000000000000000000000000",
+        "nonce": "0x1",
+        "chainId": "0xaa36a7"
+      },
+      "additionalContracts": [],
+      "isFixedGasLimit": false
+    }
+  ],
+  "receipts": [],
+  "libraries": [],
+  "pending": [],
+  "returns": {},
+  "timestamp": 1791186399240,
+  "chain": 11155111,
+  "commit": "1374d70",
+  "recovery_generation": "0x3f5e69e2e4bf259b7b1effd33d0fb4eb1ec2066bee403ef574187319ad4b91b1"
+}
