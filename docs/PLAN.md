@@ -22,27 +22,22 @@ it as fixed, and note *why* a step changed when it does.
    - [x] Local tooling: RPC URL, Etherscan key, 3 keystores, funded wallets.
    - [x] First deploy attempt (wired to Sepolia USDC) — succeeded, verified
      on Etherscan, but turned out to be a dead end (see `handoff.md`).
-   - [ ] **Current step:** redeploy wired to Aave Sepolia's EURS market
-     instead of USDC (chosen fix — confirmed EURS still has open deposit
-     capacity, unlike USDC/DAI/USDT which are all capped). Needs:
-     - Update `Deploy.s.sol` constants: swap `SEPOLIA_USDC` for the EURS
-       underlying token (`0x6d906e526a4e2Ca02097BA9d0caA3c382F52278E`,
-       **2 decimals**, not 6) and `AAVE_USDC_STATIC_ATOKEN` for the EURS
-       static vault (`0x72B49a461900e11632C95dfa563e7173438D4e3E`).
-     - Rename constants/variables that say "USDC" throughout the deploy
-       scripts (`Deploy.s.sol`, `Phase1-4`) to avoid misleading comments -
-       or at least double check every hardcoded amount assumes the right
-       decimals (`PROBATION_AMOUNT`, `SENIOR_DEPOSIT`, `JUNIOR_DEPOSIT`,
-       `ALLOCATE_TO_*` are all currently written assuming 6 decimals; EURS
-       is 2 decimals, so e.g. "1 EURS" is `100`, not `1e6`).
-     - The contracts themselves (`VaultRegistry`, `Cascade`, `ReserveNote`,
-       `RepoFacility`) need **no code changes** - they're already
-       decimals-agnostic (they read `IERC20.decimals()` or just move raw
-       `uint256` amounts). Only the deploy scripts' constants change.
-     - Fund deployer with Sepolia EURS via Aave's faucet contract (same
-       pattern as the USDC mint - see `handoff.md` for the exact faucet
-       contract address and ABI).
-     - Re-run `forge script script/deploy/Deploy.s.sol:DeploySepolia
+   - [x] Redeploy scripts switched to Aave Sepolia's EURS market instead
+     of USDC (chosen fix — confirmed via `cast call` that EURS still has
+     open deposit capacity, unlike USDC/DAI/USDT which are all capped at
+     `maxDeposit() == 0`). `Deploy.s.sol` constants renamed
+     `SEPOLIA_USDC`/`AAVE_USDC_STATIC_ATOKEN` → `SEPOLIA_EURS`/
+     `AAVE_EURS_STATIC_ATOKEN` with EURS's addresses; `Phase1-3b` env var
+     names and hardcoded amounts (`PROBATION_AMOUNT`, `SENIOR_DEPOSIT`,
+     `JUNIOR_DEPOSIT`, `ALLOCATE_TO_*`) rescaled from 6 decimals to EURS's
+     2 (e.g. "1 unit" is now `100`, not `1e6`). No contract code changes —
+     `VaultRegistry`/`Cascade`/`ReserveNote`/`RepoFacility` were already
+     decimals-agnostic. `forge build` confirmed clean (decisions.md #10).
+   - [ ] **Current step:** fund deployer (and lender) with Sepolia EURS via
+     Aave's faucet contract (same pattern as the USDC mint - see
+     `handoff.md` for the exact faucet contract address and ABI), update
+     `.env` with the EURS addresses and new deployment addresses, then
+     re-run `forge script script/deploy/Deploy.s.sol:DeploySepolia
        --broadcast --verify` against the new constants. This abandons the
        USDC-wired deployment entirely (new addresses).
    - [ ] Fund the new registry with probation-amount EURS, run Phase 1

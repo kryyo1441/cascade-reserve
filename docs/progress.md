@@ -45,7 +45,8 @@ few seconds. `forge test --profile deep` reruns the invariant suites at
   lifecycle-flag consistency)
 
 ### Deploy infrastructure (`script/deploy/`)
-- `Deploy.s.sol` — deploys all 6 contracts, wired to Sepolia USDC.
+- `Deploy.s.sol` — deploys all 6 contracts, wired to Sepolia EURS (switched
+  from USDC mid-session — see decisions.md #10).
 - `Phase1_RegisterVaults.s.sol` — registers the real external vault + the
   attacker vault.
 - `Phase2_DepositAndAllocate.s.sol` — deposits into L1/L2, allocates into
@@ -76,18 +77,23 @@ few seconds. `forge test --profile deep` reruns the invariant suites at
   contract, called directly - see `handoff.md`). Lender wallet: funded with
   0.02 Sepolia ETH and 100 Sepolia USDC (both sent from deployer).
 
-### Sepolia deployment — superseded, about to be redone
+### Sepolia deployment — superseded, redeploy scripts ready
 All 6 contracts were deployed to Sepolia and verified on Etherscan, wired
 to Aave's Sepolia USDC (`0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8`). That
-deployment is **stuck and will be abandoned**: Aave's Sepolia USDC market
-has hit its supply cap (`maxDeposit() == 0`), which blocks even registering
-the real external vault, because `VaultRegistry.register()` bundles a
-probation deposit into the registration call itself. Full story, evidence,
-and the chosen fix are in `handoff.md` and `PLAN.md`.
+deployment is **abandoned**: Aave's Sepolia USDC market has hit its supply
+cap (`maxDeposit() == 0`), which blocks even registering the real external
+vault, because `VaultRegistry.register()` bundles a probation deposit into
+the registration call itself. Full story and evidence are in `handoff.md`.
+
+The fix — switching the protocol's asset to Aave Sepolia's EURS market —
+is implemented in `script/deploy/*.sol` (constants + decimals-correct
+amounts, `forge build` clean, no contract code changes needed since
+`VaultRegistry`/`Cascade`/`ReserveNote`/`RepoFacility` are decimals-
+agnostic). See decisions.md #10. Not yet redeployed on-chain.
 
 ## Not done yet
-- Redeploy with the asset switched to EURS (planned fix, not yet executed
-  — awaiting the user's go-ahead, asked right when this session paused).
+- Fund deployer/lender with Sepolia EURS and re-run `Deploy.s.sol` against
+  the new constants (new addresses - old USDC-wired ones are abandoned).
 - Re-run Phase 1-4 against the new deployment.
 - Dashboard (Next.js + shadcn/ui + lucide-react, per earlier user request).
 - `README.md` (still the default `forge init` placeholder).

@@ -165,32 +165,29 @@ protocols probably don't recognize it at all).
 
 ## Immediate next steps, in order
 
-1. Get the user's go-ahead on the EURS switch (or their alternative).
-2. Update `script/deploy/Deploy.s.sol` constants (asset + vault addresses,
-   decimals-correct amounts). Update `Phase1-4` scripts' hardcoded amounts
-   the same way if any assume 6 decimals.
-3. `forge build` to confirm it still compiles (should be trivial - it's
-   just constant values changing, no logic changes).
-4. User funds deployer (and lender) with Sepolia EURS via the faucet
-   contract command above.
+1. ~~Get the user's go-ahead on the EURS switch~~ — done (steps 2-3 below
+   are complete as of this session).
+2. ~~Update `script/deploy/Deploy.s.sol` constants~~ — done.
+   `SEPOLIA_USDC`/`AAVE_USDC_STATIC_ATOKEN` renamed to
+   `SEPOLIA_EURS`/`AAVE_EURS_STATIC_ATOKEN` with EURS's addresses.
+   `Phase1_RegisterVaults.s.sol`, `Phase2_DepositAndAllocate.s.sol`, and
+   `Phase3b_FillRepo.s.sol` updated (env var renamed `USDC` → `EURS`,
+   `AAVE_USDC_STATIC_ATOKEN` → `AAVE_EURS_STATIC_ATOKEN`; `PROBATION_AMOUNT`,
+   `SENIOR_DEPOSIT`, `JUNIOR_DEPOSIT`, `ALLOCATE_TO_AAVE`,
+   `ALLOCATE_TO_ATTACKER` rescaled from 6 decimals to EURS's 2, e.g.
+   `1e6` → `100`). `Phase3a_OpenRepo.s.sol` and `Phase4_LossAndDefault.s.sol`
+   needed no changes - they're bps-based / asset-address-free. Logged as
+   decisions.md #10.
+3. ~~`forge build` to confirm it still compiles~~ — done, clean (only
+   pre-existing lint warnings unrelated to this change).
+4. **Next up:** user funds deployer (and lender) with Sepolia EURS via the
+   faucet contract command above.
 5. User runs `Deploy.s.sol` again (`--broadcast --verify`) - new addresses,
-   update `.env`.
+   update `.env` (new contract addresses, plus add `EURS` and
+   `AAVE_EURS_STATIC_ATOKEN` env vars - the old `USDC`/
+   `AAVE_USDC_STATIC_ATOKEN` vars are no longer read by any script).
 6. Resume the phased demo: fund registry, Phase 1 (register), wait 10 min,
    Phase 2 (deposit/allocate), Phase 3a/3b (repo open/fill), wait tenor,
    Phase 4 (loss + default/repurchase).
 7. Once the on-chain trail is complete, move to `docs/PLAN.md` phases 8
    (dashboard) and 9 (README).
-
-## Prompt for tomorrow's session
-
-Paste this to start the next session:
-
-> Continue the Cascade Reserve project at
-> `/home/kryyo1441/code/cascade-reserve`. Read `docs/handoff.md` first -
-> it has the full context, including the wall we hit (Aave Sepolia's
-> USDC/DAI/USDT markets are supply-capped, blocking vault registration)
-> and the fix in progress (switch the protocol's asset to Aave Sepolia's
-> EURS market instead, which has open capacity). Also read `source.md`
-> (the brief), `decisions.md` (why every design choice was made), and
-> `docs/progress.md` / `docs/PLAN.md` for full state. Pick up exactly
-> where `docs/handoff.md`'s "Immediate next steps" list leaves off.
