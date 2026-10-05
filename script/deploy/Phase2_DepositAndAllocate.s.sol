@@ -12,30 +12,30 @@ import {ReserveNote} from "../../src/ReserveNote.sol";
 /// that one of them is about to be drained, exactly as source.md's "trust is earned, never
 /// granted" design intends).
 ///
-/// Required env vars: DEPLOYER_ADDRESS, USDC, CASCADE, L1, L2, AAVE_USDC_STATIC_ATOKEN,
+/// Required env vars: DEPLOYER_ADDRESS, EURS, CASCADE, L1, L2, AAVE_EURS_STATIC_ATOKEN,
 /// ATTACKER_VAULT. Run with --account deployer.
-/// The deployer must hold Sepolia USDC; the script handles the L1/L2 approvals itself.
+/// The deployer must hold Sepolia EURS; the script handles the L1/L2 approvals itself.
 contract Phase2DepositAndAllocate is Script {
-    uint256 constant SENIOR_DEPOSIT = 10e6; // 10 USDC
-    uint256 constant JUNIOR_DEPOSIT = 5e6; // 5 USDC
-    uint256 constant ALLOCATE_TO_AAVE = 8e6;
-    uint256 constant ALLOCATE_TO_ATTACKER = 4e6;
+    uint256 constant SENIOR_DEPOSIT = 1000; // 10 EURS (2 decimals)
+    uint256 constant JUNIOR_DEPOSIT = 500; // 5 EURS
+    uint256 constant ALLOCATE_TO_AAVE = 800;
+    uint256 constant ALLOCATE_TO_ATTACKER = 400;
 
     function run() external {
         address deployer = vm.envAddress("DEPLOYER_ADDRESS");
-        IERC20 usdc = IERC20(vm.envAddress("USDC"));
+        IERC20 eurs = IERC20(vm.envAddress("EURS"));
         Cascade cascade = Cascade(vm.envAddress("CASCADE"));
         ReserveNote l1 = ReserveNote(vm.envAddress("L1"));
         ReserveNote l2 = ReserveNote(vm.envAddress("L2"));
-        address aaveVault = vm.envAddress("AAVE_USDC_STATIC_ATOKEN");
+        address aaveVault = vm.envAddress("AAVE_EURS_STATIC_ATOKEN");
         address attackerVault = vm.envAddress("ATTACKER_VAULT");
 
         vm.startBroadcast(deployer);
 
-        usdc.approve(address(l1), SENIOR_DEPOSIT);
+        eurs.approve(address(l1), SENIOR_DEPOSIT);
         l1.deposit(SENIOR_DEPOSIT, deployer);
 
-        usdc.approve(address(l2), JUNIOR_DEPOSIT);
+        eurs.approve(address(l2), JUNIOR_DEPOSIT);
         l2.deposit(JUNIOR_DEPOSIT, deployer);
 
         cascade.allocate(aaveVault, ALLOCATE_TO_AAVE);

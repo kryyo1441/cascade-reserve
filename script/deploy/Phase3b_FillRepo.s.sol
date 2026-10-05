@@ -9,18 +9,18 @@ import {RepoFacility} from "../../src/RepoFacility.sol";
 /// moment the Reserve Rate actually gets a real, two-party, transaction-based data point
 /// (source.md's whole argument for building the facility at all).
 ///
-/// Required env vars: LENDER_ADDRESS, USDC, REPO, REPO_ID. Run with --account lender.
+/// Required env vars: LENDER_ADDRESS, EURS, REPO, REPO_ID. Run with --account lender.
 contract Phase3bFillRepo is Script {
     function run() external {
         address lender = vm.envAddress("LENDER_ADDRESS");
-        IERC20 usdc = IERC20(vm.envAddress("USDC"));
+        IERC20 eurs = IERC20(vm.envAddress("EURS"));
         RepoFacility repo = RepoFacility(vm.envAddress("REPO"));
         uint256 repoId = vm.envUint("REPO_ID");
 
         (,, , uint256 cashAmount,,,,,) = repo.repos(repoId);
 
         vm.startBroadcast(lender);
-        usdc.approve(address(repo), cashAmount);
+        eurs.approve(address(repo), cashAmount);
         repo.fillRepo(repoId);
         vm.stopBroadcast();
 

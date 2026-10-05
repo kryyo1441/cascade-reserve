@@ -264,3 +264,42 @@ need an off-chain keeper bot, which is out of scope for this slice; `roll()` is 
 on-chain stand-in, documented as such in the README.
 
 ---
+
+## 10. Protocol asset switch: Aave Sepolia USDC → Aave Sepolia EURS
+
+**Situation:** After deploying all 6 contracts against Aave V3 Sepolia's USDC market
+(decision #7) and funding the registry, `Phase1_RegisterVaults.s.sol` reverted with
+`ERC4626: deposit more than max` inside `VaultRegistry.register()`'s probation deposit.
+`cast call`-ing `maxDeposit()` on Aave Sepolia's USDC, DAI, and USDT markets all returned
+`0` - every major stablecoin market on that shared public testnet is already supply-capped,
+almost certainly from other testers' faucet activity, not anything in our contracts. This
+also surfaced a real design note worth flagging: `register()` bundles the probation deposit
+into the same transaction as registration, so a target vault's own cap can block
+registration itself, in mild tension with "permissionless registration" - not fixing that
+now (would need decoupling into a separate retryable step), just documenting it here and in
+the eventual README as a known limitation.
+
+**Choices:**
+- Switch the asset to a different Aave Sepolia market with open capacity. `maxDeposit()` on
+  LINK/WETH/WBTC/AAVE/EURS all returned `uint256.max`. Of those, EURS is the only genuine
+  stablecoin (Euro-pegged), so it's the only one that keeps source.md's "receive stablecoin
+  cash" framing intact without becoming a volatile-asset demo.
+- Look for a non-Aave protocol's real vault that happens to accept the same Aave testnet USDC
+  token - rejected: that token is Aave's own internal `TestnetERC20` mock, not official Circle
+  Sepolia USDC, so other protocols almost certainly don't recognize it at all.
+
+**What I chose:** Switch to Aave Sepolia EURS (`stataEthEURS`,
+`0x72B49a461900e11632C95dfa563e7173438D4e3E`, underlying
+`0x6d906e526a4e2Ca02097BA9d0caA3c382F52278E`) - confirmed via `cast call`: `decimals() == 2`,
+`maxDeposit() == uint256.max`.
+
+**Why:** No contract code changes needed - `VaultRegistry`, `Cascade`, `ReserveNote`, and
+`RepoFacility` are all decimals-agnostic by design (they move raw token units and never
+hardcode 6 decimals anywhere in `src/`). Only `script/deploy/*.sol` constants change: asset +
+vault addresses, and every hardcoded deposit/allocation amount rescaled from 6 decimals to 2
+(e.g. `1e6` → `100` for "1 unit"). This is a real substitution to a genuine Euro stablecoin on
+the same trusted protocol (Aave V3, same address-book source as decision #7) - not a downgrade
+to a mock, and it preserves the whole point of decision #7 (a real, independently-deployed
+external market as the system's first integration).
+
+---

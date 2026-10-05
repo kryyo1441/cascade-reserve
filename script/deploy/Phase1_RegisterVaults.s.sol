@@ -6,20 +6,20 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {VaultRegistry} from "../../src/VaultRegistry.sol";
 
 /// @notice Phase 1 of the live Sepolia demo (run after Deploy.s.sol). Registers Aave V3's real
-/// StaticATokenV3 USDC vault and our own DemoInsolventVault. Both start at zero weight; wait at
+/// StaticATokenV3 EURS vault and our own DemoInsolventVault. Both start at zero weight; wait at
 /// least OBSERVATION_WINDOW (see Deploy.s.sol) before running Phase 2, so the real elapsed time
 /// genuinely earns them full trust - this is live exercise of the observation window, not a
 /// skipped feature (source.md's own point about this).
 ///
-/// Required env vars: DEPLOYER_ADDRESS, REGISTRY, AAVE_USDC_STATIC_ATOKEN, ATTACKER_VAULT.
+/// Required env vars: DEPLOYER_ADDRESS, REGISTRY, AAVE_EURS_STATIC_ATOKEN, ATTACKER_VAULT.
 /// Run with --account deployer (keystore signer, no raw key in any file).
-/// The registry must already hold at least 2x PROBATION_AMOUNT of Sepolia USDC (send it there
+/// The registry must already hold at least 2x PROBATION_AMOUNT of Sepolia EURS (send it there
 /// manually via `cast send` before running this - see README).
 contract Phase1RegisterVaults is Script {
     function run() external {
         address deployer = vm.envAddress("DEPLOYER_ADDRESS");
         VaultRegistry registry = VaultRegistry(vm.envAddress("REGISTRY"));
-        address aaveVault = vm.envAddress("AAVE_USDC_STATIC_ATOKEN");
+        address aaveVault = vm.envAddress("AAVE_EURS_STATIC_ATOKEN");
         address attackerVault = vm.envAddress("ATTACKER_VAULT");
 
         vm.startBroadcast(deployer);
