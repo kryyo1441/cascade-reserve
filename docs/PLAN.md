@@ -33,22 +33,28 @@ it as fixed, and note *why* a step changed when it does.
      2 (e.g. "1 unit" is now `100`, not `1e6`). No contract code changes —
      `VaultRegistry`/`Cascade`/`ReserveNote`/`RepoFacility` were already
      decimals-agnostic. `forge build` confirmed clean (decisions.md #10).
-   - [ ] **Current step:** fund deployer (and lender) with Sepolia EURS via
-     Aave's faucet contract (same pattern as the USDC mint - see
-     `handoff.md` for the exact faucet contract address and ABI), update
-     `.env` with the EURS addresses and new deployment addresses, then
-     re-run `forge script script/deploy/Deploy.s.sol:DeploySepolia
-       --broadcast --verify` against the new constants. This abandons the
-       USDC-wired deployment entirely (new addresses).
-   - [ ] Fund the new registry with probation-amount EURS, run Phase 1
-     (register Aave's real EURS vault + the attacker vault).
-   - [ ] Wait out the observation window (10 min), run Phase 2 (deposit +
-     allocate).
-   - [ ] Run Phase 3a/3b (open + fill a real two-party repo).
-   - [ ] Run Phase 4 (drain the attacker vault, checkpoint/slash it, settle
-     the repo - either repurchased or defaulted, pick whichever produces
-     the more interesting on-chain trail).
-   - [ ] Double-check all 6 contracts verify cleanly on the new addresses.
+   - [x] Funded deployer/lender with Sepolia EURS via Aave's faucet
+     contract, redeployed all 6 contracts to Sepolia wired to EURS,
+     verified cleanly on Etherscan (new addresses in `.env`; old
+     USDC-wired deployment abandoned - see `handoff.md`).
+   - [x] Funded the new registry, ran Phase 1 (registered Aave's real
+     EURS vault + the attacker vault, both at zero weight).
+   - [x] Waited out the observation window (10 min), ran Phase 2
+     (deposited 10 EURS into L1 / 5 EURS into L2, allocated 8 EURS to the
+     Aave vault and 4 EURS to the attacker vault).
+   - [x] Ran Phase 3a/3b: opened repo #0 (1.89 EURS cash, 1.90 EURS
+     repurchase), lender filled it. Reserve Rate recorded (annualized wad
+     ~278 - expected to look huge given the 10-minute tenor annualizing a
+     0.5% premium, not a bug).
+   - [x] Ran Phase 4 (waited past the repo tenor): drained the attacker
+     vault, checkpointed it (permissionless loss detection - permanently
+     slashed its weight to 0), settled repo #0 as **defaulted** (lender
+     keeps the L1 note, no auction). The waterfall worked exactly as
+     designed: senior claim held at 1000 through the loss, junior claim
+     absorbed it (379 → 19).
+   - [ ] Double-check all 6 contracts verify cleanly on the new addresses
+     (verification ran during `Deploy.s.sol --verify`; spot-check on
+     Etherscan before moving on).
 8. **Dashboard** — not started. Next.js + shadcn/ui + lucide-react (user's
    explicit choice), using the `ui-ux-pro-max` skill for the design pass.
    Reads live testnet state: note supply per tier (the multiplier
