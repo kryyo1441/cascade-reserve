@@ -3,7 +3,11 @@
 A read-only Next.js dashboard over the live Sepolia deployment (see the root
 `docs/PLAN.md` phase 8, `decisions.md` #3). Shows: note supply and value per
 note for each tier (the "multiplier" reading), registered vault weights, the
-current Reserve Rate, and the latest repo.
+current Reserve Rate, and the latest repo — plus two shadcn/recharts charts
+(pool composition, Reserve Rate history from on-chain fills). Desktop gets a
+stretched 2-3 column layout (`lg:` breakpoints); mobile stays single-column.
+Chart colors come from the `dataviz` skill's validated categorical palette
+(`app/globals.css`'s `--chart-1..5`), not shadcn's default grayscale.
 
 No wallet connection, no writes — it's a viewer. All chain reads happen
 server-side in `app/api/state/route.ts` (so the RPC URL never reaches the
