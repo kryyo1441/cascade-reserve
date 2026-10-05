@@ -180,14 +180,26 @@ protocols probably don't recognize it at all).
    decisions.md #10.
 3. ~~`forge build` to confirm it still compiles~~ — done, clean (only
    pre-existing lint warnings unrelated to this change).
-4. **Next up:** user funds deployer (and lender) with Sepolia EURS via the
-   faucet contract command above.
-5. User runs `Deploy.s.sol` again (`--broadcast --verify`) - new addresses,
-   update `.env` (new contract addresses, plus add `EURS` and
-   `AAVE_EURS_STATIC_ATOKEN` env vars - the old `USDC`/
-   `AAVE_USDC_STATIC_ATOKEN` vars are no longer read by any script).
-6. Resume the phased demo: fund registry, Phase 1 (register), wait 10 min,
-   Phase 2 (deposit/allocate), Phase 3a/3b (repo open/fill), wait tenor,
-   Phase 4 (loss + default/repurchase).
-7. Once the on-chain trail is complete, move to `docs/PLAN.md` phases 8
-   (dashboard) and 9 (README).
+4. ~~User funds deployer (and lender) with Sepolia EURS via the faucet
+   contract command above~~ — done.
+5. ~~User runs `Deploy.s.sol` again (`--broadcast --verify`)~~ — done. All
+   6 contracts redeployed and verified, wired to EURS. **Gotcha hit and
+   fixed along the way:** `.env` ended up with duplicate `REGISTRY`/
+   `CASCADE`/`L1`/`L2`/`REPO`/`ATTACKER_VAULT` keys (old USDC block +
+   new EURS block). Bash's own `source .env` takes the *last* assignment
+   (so manual `cast` commands using `$REGISTRY` worked fine), but
+   `forge`'s own dotenv auto-loader takes the *first* match - so
+   `Phase1_RegisterVaults` silently registered against the stale
+   USDC-wired registry and reverted `AssetMismatch()`. Fixed by deleting
+   the stale duplicate block entirely. **Lesson for next time:** never
+   leave duplicate keys in `.env`, even temporarily - the two most common
+   tools reading it (a sourced shell vs. forge's own loader) can resolve
+   duplicates in opposite directions.
+6. ~~Resume the phased demo: fund registry, Phase 1 (register), wait 10
+   min, Phase 2 (deposit/allocate), Phase 3a/3b (repo open/fill), wait
+   tenor, Phase 4 (loss + default/repurchase)~~ — **done, fully on-chain.**
+   Senior claim held at 1000 through the attacker-vault loss; junior claim
+   absorbed it (379 → 19); repo #0 settled as a real default. See
+   `docs/progress.md` for the full on-chain trail.
+7. **Next up:** spot-check all 6 contracts verify cleanly on Etherscan,
+   then move to `docs/PLAN.md` phases 8 (dashboard) and 9 (README).
