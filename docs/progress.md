@@ -103,7 +103,13 @@ EURS-wired, and the full phased demo has been run end-to-end on Sepolia:**
 The required on-chain trail (real deployment, real external vault
 integration, real loss scenario, real two-party repo market) is complete.
 
+### Dashboard (`dashboard/`)
+Next.js + shadcn/ui, read-only, live against the deployment above. One
+server-side `viem` multicall (`app/api/state/route.ts`) feeds a page that
+polls every 15s. Verified in-browser against the real post-Phase-4 chain
+state - correctly showed the slashed attacker vault, the junior tranche's
+loss, and the closed repo. See `dashboard/README.md`.
+
 ## Not done yet
 - Spot-check all 6 contracts on Etherscan to confirm verification held.
-- Dashboard (Next.js + shadcn/ui + lucide-react, per earlier user request).
 - `README.md` (still the default `forge init` placeholder).
