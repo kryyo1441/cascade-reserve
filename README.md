@@ -163,6 +163,8 @@ faucet command for Sepolia EURS (the protocol's current asset — see
 
 ### Dashboard
 
+![Cascade Reserve dashboard, live against the Sepolia deployment](dashboard/docs/screenshot.jpg)
+
 ```shell
 cd dashboard
 cp .env.local.example .env.local   # fill in the RPC URL + 6 contract addresses
