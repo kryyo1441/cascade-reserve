@@ -52,9 +52,10 @@ it as fixed, and note *why* a step changed when it does.
      keeps the L1 note, no auction). The waterfall worked exactly as
      designed: senior claim held at 1000 through the loss, junior claim
      absorbed it (379 → 19).
-   - [ ] Double-check all 6 contracts verify cleanly on the new addresses
-     (verification ran during `Deploy.s.sol --verify`; spot-check on
-     Etherscan before moving on).
+   - [x] Double-checked all 6 contracts on Etherscan directly (API v2,
+     `getsourcecode`): all verified with matching source
+     (`VaultRegistry`, `Cascade`, `ReserveNote` ×2, `RepoFacility`,
+     `DemoInsolventVault`).
 8. ~~Dashboard~~ — done (`dashboard/`, see its own README). Next.js +
    shadcn/ui, read-only. All chain reads happen server-side in one `viem`
    multicall (`app/api/state/route.ts`) so the RPC URL never reaches the
