@@ -44,6 +44,17 @@ export const repoFacilityAbi = [
   { type: "function", name: "reserveRate", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   { type: "function", name: "nextRepoId", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   { type: "function", name: "fillsCount", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
+  {
+    type: "function",
+    name: "fills",
+    stateMutability: "view",
+    inputs: [{ type: "uint256" }],
+    outputs: [
+      { type: "uint64", name: "timestamp" },
+      { type: "uint256", name: "cashAmount" },
+      { type: "uint256", name: "rateWad" },
+    ],
+  },
   { type: "function", name: "haircutBps", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   {
     type: "function",

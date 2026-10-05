@@ -28,5 +28,12 @@ export type CascadeState = {
   cascade: { seniorClaim: string; juniorClaim: string; poolValue: string; isStressed: boolean };
   tiers: { l1: TierState; l2: TierState };
   vaults: VaultState[];
-  repo: { reserveRateWad: string; repoCount: string; fillsCount: string; haircutBps: string; lastRepo: RepoState | null };
+  repo: {
+    reserveRateWad: string;
+    repoCount: string;
+    fillsCount: string;
+    haircutBps: string;
+    lastRepo: RepoState | null;
+    fillHistory: { timestamp: string; cashAmount: string; rateWad: string }[];
+  };
 };
