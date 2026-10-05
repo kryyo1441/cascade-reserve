@@ -66,16 +66,12 @@ it as fixed, and note *why* a step changed when it does.
    repo. Didn't end up invoking the `ui-ux-pro-max` skill - shadcn's
    defaults were clean enough for a read-only internal viewer; revisit if
    the dashboard becomes user-facing.
-9. **README.md** — not started. Must state plainly: what's real vs
-   simplified, the assumptions for undefined terms (discovery engine,
-   floor, depth - already defined in `decisions.md`, just needs
-   summarizing), known risks (Morpho Blue dependency risk - N/A here since
-   we never integrated Morpho Blue, see decisions.md #7 - and repo haircut-
-   spiral risk), and how to reproduce tests + deployment. Should also
-   mention the `register()`-bundles-deposit limitation discovered during
-   deployment (see `handoff.md` - "Minor design note for the README").
-   Depends on phase 7's final addresses and phase 8's dashboard existing
-   (or a note that it doesn't, if skipped).
+9. ~~README.md~~ — done. States what's real vs. simplified vs. not
+   built, the assumptions for undefined terms (discovery engine, floor,
+   depth), known risks (Reserve Rate manipulation, haircut-spiral,
+   registration-blocks-on-deposit, Morpho Blue N/A), and how to reproduce
+   tests, deployment, and the dashboard. Points to `decisions.md` for the
+   full reasoning behind each choice rather than duplicating it.
 
 ## Out of scope (per source.md, revisit only if everything above is solid)
 - Full Morpho Blue integration (impossible on any public testnet anyway -
